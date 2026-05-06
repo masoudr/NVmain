@@ -85,6 +85,10 @@ FRFCFS_WQF::FRFCFS_WQF( ) : readQueueId(0), writeQueueId(1)
     measuredQueueLatencies = 0;
     measuredTotalLatencies = 0;
     starvation_precharges = 0;
+    averageReadLatency = 0.0f;
+    averageWriteLatency = 0.0f;
+    measuredReadLatencies = 0;
+    measuredWriteLatencies = 0;
 
     mem_reads = 0;
     mem_writes = 0;
@@ -223,6 +227,10 @@ void FRFCFS_WQF::RegisterStats( )
     AddStat(measuredLatencies);
     AddStat(measuredQueueLatencies);
     AddStat(measuredTotalLatencies);
+    AddStat(averageReadLatency);
+    AddStat(averageWriteLatency);
+    AddStat(measuredReadLatencies);
+    AddStat(measuredWriteLatencies);
 
     MemoryController::RegisterStats( );
 }
@@ -325,6 +333,26 @@ bool FRFCFS_WQF::RequestComplete( NVMainRequest * request )
                                 - static_cast<double>(request->arrivalCycle))
                             / static_cast<double>(measuredTotalLatencies+1);
         measuredTotalLatencies += 1;
+
+        /* Per-type latency tracking */
+        if( request->type == READ || request->type == READ_PRECHARGE )
+        {
+            averageReadLatency = ((averageReadLatency
+                                   * static_cast<double>(measuredReadLatencies))
+                                   + static_cast<double>(request->completionCycle)
+                                   - static_cast<double>(request->issueCycle))
+                               / static_cast<double>(measuredReadLatencies+1);
+            measuredReadLatencies += 1;
+        }
+        else
+        {
+            averageWriteLatency = ((averageWriteLatency
+                                    * static_cast<double>(measuredWriteLatencies))
+                                    + static_cast<double>(request->completionCycle)
+                                    - static_cast<double>(request->issueCycle))
+                                / static_cast<double>(measuredWriteLatencies+1);
+            measuredWriteLatencies += 1;
+        }
     }
 
     return MemoryController::RequestComplete( request );

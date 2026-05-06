@@ -246,5 +246,70 @@ Sections
 8/17/2012 - Created first README
 2/8/2017 - Update README for cleanup branch
 
+------------------------------------------------------
+
+6. ReRAM Graph Engine Simulation (run_reram.py)
+
+    A Python script is provided to run NVMain for a
+    ReRAM crossbar-based graph accelerator and report
+    read/write latency and energy per access clearly.
+
+    Prerequisites:
+        Build NVMain first (see section 2a):
+        $ scons --build-type=fast
+
+    Basic usage (uses built-in defaults):
+        $ python3 run_reram.py
+
+    Full usage:
+        $ python3 run_reram.py [config] [trace] [cycles] [PARAM=value ...]
+
+    Arguments:
+        config   Path to NVMain config file
+                 Default: Config/RRAM_GraphEngine_128x128.config
+        trace    Path to NVMain trace file (.nvt)
+                 Default: Tests/Traces/hello_world.nvt
+        cycles   Max cycles to simulate (0 = full trace)
+                 Default: 0
+
+    Special overrides (SIZE and BANKS):
+        SIZE=NxN   Set crossbar dimensions. N must be a multiple
+                   of 8. Automatically scales ROWS, MATHeight,
+                   COLS, and cell energy values.
+                   Examples: SIZE=32x32, SIZE=128x128, SIZE=256x256
+
+        BANKS=N    Number of crossbars per engine.
+                   Each bank models one independent NxN crossbar.
+                   Examples: BANKS=1, BANKS=4, BANKS=8
+
+    Any standard NVMain parameter can also be overridden:
+        CLK=N      Clock frequency in MHz (e.g. CLK=800)
+
+    Examples:
+        # Default: 128x128 crossbar, 4 crossbars, full trace
+        $ python3 run_reram.py
+
+        # 1 crossbar, 32x32 array
+        $ python3 run_reram.py Config/RRAM_GraphEngine_128x128.config \
+              Tests/Traces/hello_world.nvt 0 SIZE=32x32 BANKS=1
+
+        # 8 crossbars, 256x256 array
+        $ python3 run_reram.py Config/RRAM_GraphEngine_128x128.config \
+              Tests/Traces/hello_world.nvt 0 SIZE=256x256 BANKS=8
+
+    Output (example):
+        Read  latency  :  35.85 cycles  =  89.62 ns
+        Write latency  :  43.12 cycles  =  107.81 ns
+        Read  energy   :  1.7991 nJ  per access  (avg across 4 crossbars)
+        Write energy   :  37.8396 nJ  per access  (avg across 4 crossbars)
+
+    Notes:
+        - Read energy scales linearly with crossbar size (bitline count).
+        - Write energy reflects per-bit cell switching (Ereset/Eset) over
+          the fixed 512-bit bus transaction width and is size-independent
+          in this model.
+        - The config file to modify for device parameters is:
+          Config/RRAM_GraphEngine_128x128.config
+
 
 

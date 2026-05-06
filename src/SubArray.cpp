@@ -85,6 +85,9 @@ SubArray::SubArray( )
     activeEnergy = 0.0f;
     burstEnergy = 0.0f;
     writeEnergy = 0.0f;
+    readEnergy = 0.0f;
+    readEnergyPerAccess = 0.0f;
+    writeEnergyPerAccess = 0.0f;
     refreshEnergy = 0.0f;
 
     writeCycle = false;
@@ -226,6 +229,9 @@ void SubArray::RegisterStats( )
         AddUnitStat(activeEnergy, "nJ");
         AddUnitStat(burstEnergy, "nJ");
         AddUnitStat(writeEnergy, "nJ");
+        AddUnitStat(readEnergy, "nJ");
+        AddUnitStat(readEnergyPerAccess, "nJ");
+        AddUnitStat(writeEnergyPerAccess, "nJ");
         AddUnitStat(refreshEnergy, "nJ");
     }
 
@@ -1472,6 +1478,10 @@ void SubArray::CalculateStats( )
     averageEndurance = endrModel->GetAverageLife( );
 
     actWaitAverage = static_cast<double>(actWaitTotal) / static_cast<double>(actWaits);
+
+    readEnergy = activeEnergy + burstEnergy;
+    readEnergyPerAccess  = (reads  > 0) ? readEnergy  / static_cast<double>(reads)  : 0.0;
+    writeEnergyPerAccess = (writes > 0) ? writeEnergy / static_cast<double>(writes) : 0.0;
 
     /* Print a histogram as a python-style dict. */
     mlcTimingHisto = PyDictHistogram<uint64_t, uint64_t>( mlcTimingMap );

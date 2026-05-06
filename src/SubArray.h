@@ -180,6 +180,9 @@ class SubArray : public NVMObject
     double activeEnergy;
     double burstEnergy;
     double writeEnergy;
+    double readEnergy;
+    double readEnergyPerAccess;
+    double writeEnergyPerAccess;
     double refreshEnergy;
 
     uint64_t worstCaseEndurance, averageEndurance;

@@ -33,7 +33,6 @@ import os, sys
 import subprocess
 
 from os.path import basename
-from gem5_scons import Transform
 
 
 HG_COMMAND = 'hg'
@@ -70,14 +69,15 @@ if 'NVMAIN_BUILD' in env:
 
 elif 'TARGET_ISA' in env:
     # Assume that this is a gem5 extras build if this is set.
+    from gem5_scons import Transform
     NVMainSource('SimInterface/Gem5Interface/Gem5Interface.cpp')
 
     generated_dir = Dir('../protocol')
 
     def MakeIncludeAction(target, source, env):
-        f = file(str(target[0]), 'w')
+        f = open(str(target[0]), 'w')
         for s in source:
-            print >>f, '#include "%s"' % str(s.abspath)
+            f.write('#include "%s"\n' % str(s.abspath))
         f.close()
 
     def MakeInclude(source):
@@ -91,6 +91,6 @@ elif "NVMAINPATH" in os.environ:
     # Nothing to be done here for now.
     pass
 else:
-    print "ERROR: What kind of build is this?"
+    print("ERROR: What kind of build is this?")
     sys.exit(1)
 

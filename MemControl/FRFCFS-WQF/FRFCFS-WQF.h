@@ -121,6 +121,10 @@ class FRFCFS_WQF : public MemoryController
     uint64_t total_read_cycles;
     uint64_t minimum_read_spacing;
     uint64_t maximum_read_spacing;
+
+    /* Per-type latency stats */
+    double   averageReadLatency, averageWriteLatency;
+    uint64_t measuredReadLatencies, measuredWriteLatencies;
 };
 
 };

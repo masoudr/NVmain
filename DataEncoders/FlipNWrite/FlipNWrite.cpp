@@ -262,7 +262,7 @@ ncycle_t FlipNWrite::Write( NVMainRequest *request )
         }
     }
 
-    delete modifyCount;
+    delete[] modifyCount;
     
     return rv;
 }

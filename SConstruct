@@ -154,7 +154,7 @@ colors['red']    = '\033[91m'
 colors['normal'] = '\033[0m'
 
 if not sys.stdout.isatty():
-    for key, value in colors.iteritems():
+    for key, value in colors.items():
         colors[key] = ''
 
 
@@ -194,15 +194,15 @@ class PrettyPrint(object):
             return strip_build_path(str(f), env)
 
         if len(source) > 0:
-            srcs = map(strip, source)
-            tgts = map(strip, target)
+            srcs = list(map(strip, source))
+            tgts = list(map(strip, target))
             split_src = srcs[0].split("/")
 
             src_basename = os.path.splitext(split_src[-1])[0]
             src_name = src_basename
             suffix = env['OBJSUFFIX']
         else:
-            tgts = map(strip, target)
+            tgts = list(map(strip, target))
             split_src = tgts[0].split("/")
             src_basename = os.path.splitext(split_src[-1])[0]
             src_name = tgts[0]
